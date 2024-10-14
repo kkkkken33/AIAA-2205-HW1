@@ -1,0 +1,59 @@
+1. Try run the samples, and combine three results. For each row, choose the majority result of the three as the final result to submit. BAD score: 0.35961
+2. Try find the best methods for this problem. Directly submit mlp, better. score: 0.41228
+3. Try add activation='relu',  solver='adam', alpha=0.0001, in the MLPClassifier. slightly better score: 0.41315
+4. Try larger iterate times up to 800. BAD score 0.40789
+5. Use Elbow Method, find k = 66 clusters. Retrain MLP. better score 0.44736
+6. Split trainval to training set and validation set, use k-folds to validate the accuracy of model. 
+7. Try different MLP classifier hidden_layer_sizes. 400: 0.47, 200: 0.46, 100: 0.46 300:0.46, 1000: 0.48
+8. learning rate: 'constant': 0.45636= 'adaptive'. init: 0.0010.45636 0.002: 0.46749 0.003: 0.46696, 0.004: 0.46272, 0.005:0.45548
+9. max_iter: 200: 0.46749 300:0.46219 250: 0.46184
+10. 最佳参数: {'activation': 'relu', 'alpha': 0.001, 'hidden_layer_sizes': (500,), 'learning_rate_init': 0.001, 'solver': 'adam'}
+最佳得分: 0.4667844522968198
+11. Try combine three. bad score: 0.44298
+
+python train_kmeans.py selected.mfcc.csv 430 kmeans.430.model
+python get_bof.py kmeans.430.model 430 labels/videos.name.lst --mfcc_path mfcc/ --output_path bof430/
+
+python train_svm_multiclass.py bof66/ 66 labels/trainval.csv models/mfcc-66.svm.multiclass.model
+
+python train_mlp.py bof66/ 66 labels/trainval.csv models/mfcc-66.mlp.model
+python train_mlp.py bof100/ 100 labels/trainval.csv models/mfcc-100.mlp.model
+python train_mlp.py bof200/ 200 labels/trainval.csv models/mfcc-200.mlp.model
+python test_mlp.py models/mfcc-66.mlp.model bof66 66 labels/test_for_student.label mfcc-66.mlp.csv
+python test_mlp.py models/mfcc-100.mlp.model bof100 100 labels/test_for_student.label mfcc-100.mlp.csv
+python test_mlp.py models/mfcc-200.mlp.model bof200 200 labels/test_for_student.label mfcc-200.mlp.csv
+
+
+Cross Validation:
+python Cross_Validation_MLP.py bof66/ 66 labels/trainval.csv models/mfcc-66.mlp.model
+python Cross_Validation_MLP.py bof100/ 100 labels/trainval.csv models/mfcc-100.mlp.model
+
+python Cross_Validation_MLP.py bof/ 58 labels/trainval.csv models/mfcc-58.mlp.model
+
+python Cross_Validation_SVM.py bof66/ 66 labels/trainval.csv models/mfcc-66.svm.model
+
+python Cross_Validation_Combine.py bof66/ 66 labels/trainval.csv models/stack_model.66.model
+
+Grid Search:
+python Grid_SearchCV.py bof66/ 66 labels/trainval.csv models/mfcc-66.mlp.model
+
+python Test_Combine_Three.py models/mfcc-66.mlp.model bof66 66 labels/test_for_student.label mfcc-66.combine.csv
+
+Bsearch
+python Bserch.py bof200/ 200 labels/trainval.csv models/mfcc-200.mlp.model
+
+Boosting
+python train_boosting.py bof66/ 66 labels/trainval.csv models/mfcc-66.boosting.mlp.model
+python test_boosting.py models/mfcc-66.boosting.mlp.model bof66 66 labels/test_for_student.label mfcc-66.boosting.csv
+
+XGBoosting
+python train_XGBoost.py bof430/ 430 labels/trainval.csv models/mfcc-430.XGBoost.model
+python test_XGBoost.py models/mfcc-430.XGBoost.model bof430 430 labels/test_for_student.label mfcc-430.XGBoost.csv
+
+
+Stratified
+python Stratified_Cross_Validation.py bof66/ 66 labels/trainval.csv models/mfcc-66.XGBoost.mlp.model
+python Stratified_Cross_Validation.py bof200/ 200 labels/trainval.csv models/mfcc-200.XGBoost.mlp.model
+python Stratified_Cross_Validation.py bof430/ 430 labels/trainval.csv models/mfcc-430.XGBoost.mlp.model
+
+
